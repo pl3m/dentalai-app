@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build outputs
+frontend/dist/
+backend/**/bin/
+backend/**/obj/
+*.dll
+*.pdb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.local
+appsettings.Development.json
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# Azure
+.azure/
+*.parameters.json.local

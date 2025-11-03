@@ -1,0 +1,12 @@
+name: dentalai
+
+services:
+  api:
+    project: ./backend/DentalAI.API
+    host: appservice
+    language: dotnet
+
+  frontend:
+    project: ./frontend
+    host: staticwebapp
+    language: js
