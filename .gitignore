@@ -37,3 +37,10 @@ appsettings.Development.json
 # Azure
 .azure/
 *.parameters.json.local
+
+# Publish outputs and deployment packages
+backend/**/publish/
+backend/**/deploy.zip
+
+# Configuration files (keep examples only)
+backend/**/appsettings.json
