@@ -104,6 +104,21 @@ using (var scope = app.Services.CreateScope())
 
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
+// Health check endpoint to wake up paused SQL Serverless database
+app.MapGet("/api/health", async (DentalDbContext db) =>
+{
+    try
+    {
+        // Simple query to wake up the database if paused
+        await db.Database.ExecuteSqlRawAsync("SELECT 1");
+        return Results.Ok(new { status = "healthy", database = "connected" });
+    }
+    catch
+    {
+        return Results.StatusCode(503);
+    }
+});
+
 // Patient endpoints
 app.MapGet("/api/patients", async (DentalDbContext db) =>
     await db.Patients

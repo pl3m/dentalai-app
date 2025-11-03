@@ -11,6 +11,11 @@ export class PatientService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
 
+  // Health check to wake up paused SQL Serverless database
+  checkHealth(): Observable<{ status: string; database: string }> {
+    return this.http.get<{ status: string; database: string }>(`${this.apiUrl}/health`);
+  }
+
   getPatients(): Observable<Patient[]> {
     return this.http.get<Patient[]>(`${this.apiUrl}/patients`);
   }

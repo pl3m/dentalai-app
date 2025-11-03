@@ -268,14 +268,33 @@ export class PatientListComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
     
-    this.patientService.getPatients().subscribe({
-      next: (patients) => {
-        this.patients.set(patients);
-        this.loading.set(false);
+    // First wake up the database, then load patients
+    this.patientService.checkHealth().subscribe({
+      next: () => {
+        // Database is awake, now load patients
+        this.patientService.getPatients().subscribe({
+          next: (patients) => {
+            this.patients.set(patients);
+            this.loading.set(false);
+          },
+          error: (err) => {
+            this.error.set(err.message || 'Failed to load patients');
+            this.loading.set(false);
+          }
+        });
       },
-      error: (err) => {
-        this.error.set(err.message || 'Failed to load patients');
-        this.loading.set(false);
+      error: () => {
+        // Health check failed, but try loading patients anyway
+        this.patientService.getPatients().subscribe({
+          next: (patients) => {
+            this.patients.set(patients);
+            this.loading.set(false);
+          },
+          error: (err) => {
+            this.error.set(err.message || 'Failed to load patients');
+            this.loading.set(false);
+          }
+        });
       }
     });
   }
