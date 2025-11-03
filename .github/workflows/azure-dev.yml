@@ -16,15 +16,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Azure Developer CLI (script)
+      - name: Install Azure Developer CLI (Homebrew)
         shell: bash
         run: |
           set -euo pipefail
-          AZD_VERSION=v1.9.3
-          echo "Installing azd ${AZD_VERSION} via install script"
-          curl -fsSL https://aka.ms/install-azd.sh -o install-azd.sh
-          chmod +x install-azd.sh
-          ./install-azd.sh --version ${AZD_VERSION}
+          brew update
+          brew install azure-dev
           azd version
 
       - name: Azure Login (OIDC)
