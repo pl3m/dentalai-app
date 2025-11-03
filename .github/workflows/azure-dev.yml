@@ -16,10 +16,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Azure Developer CLI
-        uses: Azure/setup-azd@v1.0.0
-        with:
-          azd-version: latest
+      - name: Install Azure Developer CLI (from GitHub Releases)
+        shell: bash
+        run: |
+          set -euo pipefail
+          AZD_VERSION=v1.9.3
+          echo "Installing azd ${AZD_VERSION} from GitHub releases"
+          curl -sSLf https://github.com/Azure/azure-dev/releases/download/${AZD_VERSION}/azd-linux-amd64.tar.gz -o azd.tar.gz
+          sudo tar -xzf azd.tar.gz -C /usr/local/bin azd
+          azd version
 
       - name: Azure Login (OIDC)
         uses: azure/login@v2
