@@ -54,45 +54,47 @@ public class AIService : IAIService
         try
         {
             var systemPrompt = @"You are a dental professional converting clinical notes into a SOAP (Subjective, Objective, Assessment, Plan) format summary.
-DENTAL-ONLY and FACTUAL-ONLY rules:
-- Use ONLY information explicitly present in the note. Do NOT invent or infer vitals, labs, imaging, demographics, or systemic findings.
-- If a section has no information, write 'Not documented.'
-- Keep content strictly within dental domain terminology.
 
-CRITICAL FORMATTING RULES - Follow these exactly:
-1. Output MUST have exactly 4 sections in this exact order, each clearly labeled:
+CRITICAL RULES - Follow these EXACTLY:
+1. Extract and format ONLY the information that is explicitly stated in the clinical notes
+2. Do NOT add explanations, meta-commentary, or describe what 'should' be in each section
+3. Do NOT invent diagnoses, findings, or treatment plans that are not in the notes
+4. Do NOT use phrases like 'typically includes', 'should mention', 'may assess', 'could involve', or any template language
+5. If information is missing for a section, write ONLY 'Not documented.' - do NOT explain what should go there
+6. Output MUST have exactly 4 sections in this exact order, each clearly labeled:
    - Subjective:
    - Objective:
    - Assessment:
    - Plan:
-2. Start each section on a new line with the exact heading followed by a colon, then a blank line, then the content
-3. Subjective: Patient's reported symptoms, chief complaint, history from patient perspective (what the patient tells you)
-4. Objective: Clinical findings, examination results, diagnostic tests, observations made by the dentist (what you observe/measure)
-5. Assessment: Diagnosis or clinical judgment based on subjective and objective findings (what you conclude)
-6. Plan: Treatment plan, recommendations, follow-up actions (what will be done)
-7. Be concise but comprehensive - include ALL important clinical details from the original notes
-8. Use clear, professional medical language
-9. Do NOT include: dates, timestamps, patient names, or metadata
-10. Do NOT combine sections - each section must be separate and clearly marked
-11. Example format (use exactly this structure):
+7. Start each section on a new line with the exact heading followed by a colon, then a blank line, then the content
+8. Subjective: Extract patient-reported symptoms, complaints, and history from the notes
+9. Objective: Extract clinical findings, examination results, and diagnostic tests from the notes
+10. Assessment: Extract any diagnoses or clinical judgments stated in the notes
+11. Plan: Extract treatment plans, recommendations, and follow-up actions from the notes
+12. Be concise - only include what is actually written in the notes
+13. Use clear, professional dental terminology
+14. Do NOT include: dates, timestamps, patient names, or metadata
+15. Do NOT combine sections - each section must be separate and clearly marked
+
+Example format (extract and format only what's in the notes):
 
 Subjective:
 
-[Patient's symptoms and complaints here]
+[Extract patient-reported symptoms from notes]
 
 Objective:
 
-[Clinical findings and examination results here]
+[Extract clinical findings from notes, or 'Not documented.' if none]
 
 Assessment:
 
-[Diagnosis here]
+[Extract diagnosis from notes, or 'Not documented.' if none]
 
 Plan:
 
-[Treatment plan here]";
+[Extract treatment plan from notes, or 'Not documented.' if none]";
 
-            var userPrompt = $@"Convert the following clinical notes to SOAP format.
+            var userPrompt = $@"Convert the following clinical notes to SOAP format. Extract ONLY the information that is explicitly written in the notes. Do NOT add explanations or describe what should be in each section.
 
 IMPORTANT: Generate ONLY ONE complete SOAP summary. Do NOT repeat or duplicate the summary.
 
