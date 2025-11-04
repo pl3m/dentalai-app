@@ -105,16 +105,26 @@ using (var scope = app.Services.CreateScope())
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
 // Health check endpoint to wake up paused SQL Serverless database
-app.MapGet("/api/health", async (DentalDbContext db) =>
+app.MapGet("/api/health", async (DentalDbContext db, CancellationToken cancellationToken) =>
 {
     try
     {
+        // Use a longer timeout for SQL Serverless resume (can take 5-15 seconds)
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
+        
         // Simple query to wake up the database if paused
-        await db.Database.ExecuteSqlRawAsync("SELECT 1");
+        await db.Database.ExecuteSqlRawAsync("SELECT 1", linkedCts.Token);
         return Results.Ok(new { status = "healthy", database = "connected" });
     }
-    catch
+    catch (OperationCanceledException)
     {
+        Log.Warning("Health check timed out - database may be resuming");
+        return Results.StatusCode(504); // Gateway Timeout
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Health check failed");
         return Results.StatusCode(503);
     }
 });
